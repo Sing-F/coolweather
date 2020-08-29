@@ -9,35 +9,35 @@ public class City extends DataSupport {
     private int mCityCode;
     private int mProvinceId;
 
-    public int getId() {
+    public int getmId() {
         return mId;
     }
 
-    public void setInt(int id) {
-        mId = id;
+    public void setmId(int mId) {
+        this.mId = mId;
     }
 
-    public String getCityName() {
+    public String getmCityName() {
         return mCityName;
     }
 
-    public void setCityName(String cityName) {
-        mCityName = cityName;
+    public void setmCityName(String mCityName) {
+        this.mCityName = mCityName;
     }
 
-    public int getCityCode() {
+    public int getmCityCode() {
         return mCityCode;
     }
 
-    public void setCityCode(int cityCode) {
-        mCityCode = cityCode;
+    public void setmCityCode(int mCityCode) {
+        this.mCityCode = mCityCode;
     }
 
-    public int getProvinceId() {
+    public int getmProvinceId() {
         return mProvinceId;
     }
 
-    public void setProvinceId(int provinceId) {
-        mProvinceId = provinceId;
+    public void setmProvinceId(int mProvinceId) {
+        this.mProvinceId = mProvinceId;
     }
 }

@@ -14,9 +14,6 @@ public class Utility {
 
     /**
      * 解析处理服务器返回的省级数据
-     *
-     * @param response
-     * @return
      */
     public static boolean handleProvinceResponse(String response) {
         if (!TextUtils.isEmpty(response)) {
@@ -25,8 +22,8 @@ public class Utility {
                 for (int i = 0; i < allProvinces.length(); i++) {
                     JSONObject provinceObject = allProvinces.getJSONObject(i);
                     Province province = new Province();
-                    province.setProvinceName(provinceObject.getString("name"));
-                    province.setProvinceCode(provinceObject.getInt("id"));
+                    province.setmProvinceName(provinceObject.getString("name"));
+                    province.setmProvinceCode(provinceObject.getInt("id"));
                     province.save();
                 }
                 return true;
@@ -47,9 +44,9 @@ public class Utility {
                 for (int i = 0; i < allCities.length(); i++) {
                     JSONObject cityObject = allCities.getJSONObject(i);
                     City city = new City();
-                    city.setCityName(cityObject.getString("name"));
-                    city.setCityCode(cityObject.getInt("id"));
-                    city.setProvinceId(provinceId);
+                    city.setmCityName(cityObject.getString("name"));
+                    city.setmCityCode(cityObject.getInt("id"));
+                    city.setmProvinceId(provinceId);
                     city.save();
                 }
                 return true;
@@ -65,14 +62,14 @@ public class Utility {
      */
     public static boolean handleCountyResponse(String response, int cityId) {
         if (!TextUtils.isEmpty(response)) {
-            JSONArray allCounties = new JSONArray();
             try {
+                JSONArray allCounties = new JSONArray(response);
                 for (int i = 0; i < allCounties.length(); i++) {
                     JSONObject countyObject = allCounties.getJSONObject(i);
                     County county = new County();
-                    county.setCountyName(countyObject.getString("name"));
-                    county.setWeatherId(countyObject.getString("weather_id"));
-                    county.setCityId(cityId);
+                    county.setmCountyName(countyObject.getString("name"));
+                    county.setmWeatherId(countyObject.getString("weather_id"));
+                    county.setmCityId(cityId);
                     county.save();
                 }
                 return true;
@@ -82,5 +79,4 @@ public class Utility {
         }
         return false;
     }
-
 }

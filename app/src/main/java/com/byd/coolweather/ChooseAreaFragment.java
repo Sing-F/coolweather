@@ -76,6 +76,7 @@ public class ChooseAreaFragment extends Fragment {
                     mSelectedProvince = mProvinceList.get(position);
                     queryCities();
                 } else if (mCurrentLevel == LEVEL_CITY) {
+                    mSelectedCity = mCityList.get(position);
                     queryCounties();
                 }
             }
@@ -84,10 +85,10 @@ public class ChooseAreaFragment extends Fragment {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCurrentLevel == LEVEL_CITY) {
-                    queryProvinces();
-                } else if (mCurrentLevel == LEVEL_COUNTY) {
+                if (mCurrentLevel == LEVEL_COUNTY) {
                     queryCities();
+                } else if (mCurrentLevel == LEVEL_CITY) {
+                    queryProvinces();
                 }
             }
         });
@@ -104,7 +105,7 @@ public class ChooseAreaFragment extends Fragment {
         if (mProvinceList.size() > 0) {
             mDataList.clear();
             for (Province province : mProvinceList) {
-                mDataList.add(province.getProvinceName());
+                mDataList.add(province.getmProvinceName());
             }
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(0);
@@ -119,19 +120,19 @@ public class ChooseAreaFragment extends Fragment {
      * 查询省内所有市
      */
     private void queryCities() {
-        mTitleText.setText(mSelectedProvince.getProvinceName());
+        mTitleText.setText(mSelectedProvince.getmProvinceName());
         mBackButton.setVisibility(View.VISIBLE);
-        mCityList = DataSupport.where("provinceid = ?", String.valueOf(mSelectedProvince.getId())).find(City.class);
+        mCityList = DataSupport.where("mprovinceid = ?", String.valueOf(mSelectedProvince.getmId())).find(City.class);
         if (mCityList.size() > 0) {
             mDataList.clear();
             for (City city : mCityList) {
-                mDataList.add(city.getCityName());
+                mDataList.add(city.getmCityName());
             }
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(0);
             mCurrentLevel = LEVEL_CITY;
         } else {
-            int provinceCode = mSelectedProvince.getProvinceCode();
+            int provinceCode = mSelectedProvince.getmProvinceCode();
             String address = "http://guolin.tech/api/china/" + provinceCode;
             queryFromServer(address, "city");
         }
@@ -141,20 +142,20 @@ public class ChooseAreaFragment extends Fragment {
      * 查询市中所有县
      */
     private void queryCounties() {
-        mTitleText.setText(mSelectedCity.getCityName());
+        mTitleText.setText(mSelectedCity.getmCityName());
         mBackButton.setVisibility(View.VISIBLE);
-        mCountyList = DataSupport.where("cityid=", String.valueOf(mSelectedCity.getId())).find(County.class);
+        mCountyList = DataSupport.where("mcityid=?", String.valueOf(mSelectedCity.getmId())).find(County.class);
         if (mCountyList.size() > 0) {
             mDataList.clear();
             for (County county : mCountyList) {
-                mDataList.add(county.getCountyName());
+                mDataList.add(county.getmCountyName());
             }
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(0);
             mCurrentLevel = LEVEL_COUNTY;
         } else {
-            int provinceCode = mSelectedProvince.getProvinceCode();
-            int cityCode = mSelectedCity.getCityCode();
+            int provinceCode = mSelectedProvince.getmProvinceCode();
+            int cityCode = mSelectedCity.getmCityCode();
             String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
             queryFromServer(address, "county");
         }
@@ -166,27 +167,17 @@ public class ChooseAreaFragment extends Fragment {
     private void queryFromServer(String address, final String type) {
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        closeProgressDialog();
-                        Toast.makeText(getContext(), "加载失败！！！", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseText = Objects.requireNonNull(response.body()).string();
+                String responseText = response.body().string();
                 boolean result = false;
                 if ("province".equals(type)) {
                     result = Utility.handleProvinceResponse(responseText);
                 } else if ("city".equals(type)) {
-                    result = Utility.handleCityResponse(responseText, mSelectedProvince.getId());
+                    result = Utility.handleCityResponse(responseText, mSelectedProvince.getmId());
                 } else if ("county".equals(type)) {
-                    result = Utility.handleCountyResponse(responseText, mSelectedCity.getId());
+                    result = Utility.handleCountyResponse(responseText, mSelectedCity.getmId());
                 }
 
                 if (result) {
@@ -204,6 +195,17 @@ public class ChooseAreaFragment extends Fragment {
                         }
                     });
                 }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        closeProgressDialog();
+                        Toast.makeText(getContext(), "加载失败！！！", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
